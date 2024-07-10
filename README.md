@@ -52,6 +52,37 @@ Chessable is designed with a menu-driven interface that allows users to perform 
 
 Users can navigate through the menu by entering the number corresponding to each action and following the on-screen prompts to enter additional details.
 
+### Loading Custom Datasets
+
+To load and analyze your own dataset of chess games, follow these steps:
+
+1. **Prepare Your Dataset**: Ensure your dataset is in Portable Game Notation (PGN) format, which is standard for representing chess games. The file should contain one or more chess games, with each game described according to the PGN standard.
+
+2. **Place the Dataset in the Project Directory**: Copy your `.pgn` file into the Chessable project directory. This is where the compiled application resides.
+
+3. **Modify the Source Code to Use Your Dataset**:
+   - Open `main.cpp` in a text editor.
+   - Locate the line where the PGN file is specified, typically something like:
+     ```cpp
+     std::ifstream pgnfile("./default_dataset.pgn");
+     ```
+   - Change `"./default_dataset.pgn"` to the path of your new `.pgn` file, e.g.:
+     ```cpp
+     std::ifstream pgnfile("./your_dataset.pgn");
+     ```
+   - Save the changes.
+
+4. **Recompile the Application**: Following the modification of the dataset path, recompile the application to incorporate the changes:
+   ```bash
+   g++ -o Chessable main.cpp -std=c++11
+   ```
+
+5. Run Chessable with the New Dataset:
+   ```bash
+   ./Chessable
+   ```
+   - Now, Chessable will load and utilize your custom dataset for all operations.
+
 ## Example
 
 Here's a snapshot of an example operation using Chessable:
