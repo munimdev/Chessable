@@ -1,0 +1,25 @@
+# Build outputs
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+Testing/
+compile_commands.json
+
+# IDE/editor
+.vscode/*.code-workspace
+
+# Python cache accidentally generated in this repo
+.mypy_cache/
+
+# Binaries
+*.o
+*.obj
+*.out
+*.exe
+*.dll
+*.dylib
+*.so
+
+# Local helper scripts
+scripts/future_commit.sh

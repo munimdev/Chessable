@@ -1,0 +1,28 @@
+name: ci
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Configure
+              run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+            - name: Build
+              run: cmake --build build --config Release
+            - name: Test
+              run: ctest --test-dir build --output-on-failure
+
+    format:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Install clang-format
+              run: sudo apt-get update && sudo apt-get install -y clang-format
+            - name: Check headers
+              run: clang-format --dry-run --Werror src/*.h src/pgnlib/*.h
+            - name: Check sources
+              run: clang-format --dry-run --Werror src/main.cpp src/pgnlib/*.cpp

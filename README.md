@@ -26,19 +26,29 @@ Chessable employs the following data structures to optimize data handling and op
 ## Installation and Setup
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/munimdev/Chessable.git
    cd Chessable
    ```
 
-2. **Compile the Source Code** (Ensure you have a C++ compiler installed):
+2. **Configure and Build** (requires CMake 3.20+ and a C++ compiler):
+
    ```bash
-   g++ -o Chessable main.cpp -std=c++11
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+   cmake --build build --config Release
    ```
 
 3. **Run the Application**:
+
    ```bash
-   ./Chessable
+   ./build/chessable_cli
+   ```
+
+4. **Run Tests**:
+
+   ```bash
+   ctest --test-dir build --output-on-failure
    ```
 
 ## Usage
@@ -60,27 +70,34 @@ To load and analyze your own dataset of chess games, follow these steps:
 
 2. **Place the Dataset in the Project Directory**: Copy your `.pgn` file into the Chessable project directory. This is where the compiled application resides.
 
-3. **Modify the Source Code to Use Your Dataset**:
-   - Open `main.cpp` in a text editor.
+3. **Modify the Source Code to Use Your Dataset** (temporary; will be replaced with runtime config in upcoming milestones):
+   - Open `src/main.cpp` in a text editor.
    - Locate the line where the PGN file is specified, typically something like:
+
      ```cpp
      std::ifstream pgnfile("./default_dataset.pgn");
      ```
+
    - Change `"./default_dataset.pgn"` to the path of your new `.pgn` file, e.g.:
+
      ```cpp
      std::ifstream pgnfile("./your_dataset.pgn");
      ```
+
    - Save the changes.
 
-4. **Recompile the Application**: Following the modification of the dataset path, recompile the application to incorporate the changes:
+4. **Rebuild the Application**: Following the modification of the dataset path, rebuild the application:
+
    ```bash
-   g++ -o Chessable main.cpp -std=c++11
+   cmake --build build --config Release
    ```
 
 5. Run Chessable with the New Dataset:
+
    ```bash
-   ./Chessable
+   ./build/chessable_cli
    ```
+
    - Now, Chessable will load and utilize your custom dataset for all operations.
 
 ## Example
@@ -97,16 +114,19 @@ Contributions to Chessable are welcome! If you have suggestions for improvements
    Navigate to the GitHub page and click the "Fork" button.
 
 2. **Create a Feature Branch**:
+
    ```bash
    git checkout -b new-feature
    ```
 
 3. **Commit Your Changes**:
+
    ```bash
    git commit -am 'Add some feature'
    ```
 
 4. **Push to the Branch**:
+
    ```bash
    git push origin new-feature
    ```
