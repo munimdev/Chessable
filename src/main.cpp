@@ -6,6 +6,8 @@
 #include "AVL.h" //include avl tree
 #include "List.h" //include linked list
 #include "Hash.h" //include hash table
+#include "app/run_chessable_cli.h"
+#include "cli/menu.h"
 
 #include "Parser.h" //PGN library parser
 using namespace std;
@@ -1127,7 +1129,7 @@ void getMostPlayedMove(string pgn, AVLNode<Game> *gameNode)
   cout << "Times played: " << highestOccurence->data.occurence << endl;
 }
 
-int main() 
+int runChessableCli()
 {
   AVLTree<EventDate> eventDateTree; // Stores all event's Date
   AVLTree<EventLocation> eventLocationTree; // Stores all Event's location
@@ -1312,19 +1314,8 @@ int main()
   int choice;
   string opening, userInput;
   do {
-    cout << "\n\x1b[36mPlease select an action (-1 to end): " << endl << endl;
-    cout << "\t1. Get Openings by ECO           2. Events Attended By A Player" << endl;
-    cout << "\t3. Get Winrate of a Player       4. Get Player Matchups" << endl;
-    cout << "\t5. Get Games Of An Event         6. Get Top Player Of Event" << endl;
-    cout << "\t7. Print All Event Data          8. Pretty Print Events" << endl;
-    cout << "\t9. Filter Events By Year         10. Get Total Games Played At Event" << endl;
-    cout << "\t11. Filter Events By Location    12. Players That Attened Some Event" << endl;
-    cout << "\t13. Get Variations of Opening    14. Get Score Between Two Players" << endl;
-    cout << "\t15. Get All Games of a Matchup   16. Get All Games of a Player" << endl;
-    cout << "\t17. Get Most Played Opening      18. Get Most Played Move After A Position" << endl;
-    cout << "\t19. Filter Player Games By Year  20. Get Most Played Opening Of Event" << endl;
-    cout << "\t21. Filter Games By Rating       22. Filter Games By Moves" << endl;
-    cout << "\x1b[0m"; cin >> choice; cout << endl;
+    cli::printMainMenu();
+    choice = cli::readMenuChoice();
     switch(choice)  //switch statement to check user input and calling respective functions
     {
       case -1:
@@ -1543,4 +1534,6 @@ int main()
       }; break;
   }
   } while (choice != -1);
+
+  return 0;
 }

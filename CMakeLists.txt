@@ -53,7 +53,12 @@ add_library(
 target_include_directories(pgnlib PUBLIC src src/pgnlib)
 target_compile_options(pgnlib PRIVATE ${CHESSABLE_WARNING_FLAGS})
 
-add_executable(chessable_cli src/main.cpp)
+add_executable(
+    chessable_cli
+    src/main.cpp
+    src/main_entry.cpp
+    src/cli/menu.cpp
+)
 target_link_libraries(chessable_cli PRIVATE pgnlib)
 target_include_directories(chessable_cli PRIVATE src src/pgnlib)
 target_compile_options(chessable_cli PRIVATE ${CHESSABLE_WARNING_FLAGS})
