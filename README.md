@@ -45,6 +45,12 @@ Chessable employs the following data structures to optimize data handling and op
    ./build/chessable_cli
    ```
 
+   Optional dataset overrides:
+
+   ```bash
+   ./build/chessable_cli --pgn ./src/WorldCup2021.pgn --openings ./src/pgndata.txt
+   ```
+
 4. **Run Tests**:
 
    ```bash
@@ -70,23 +76,14 @@ To load and analyze your own dataset of chess games, follow these steps:
 
 2. **Place the Dataset in the Project Directory**: Copy your `.pgn` file into the Chessable project directory. This is where the compiled application resides.
 
-3. **Modify the Source Code to Use Your Dataset** (temporary; will be replaced with runtime config in upcoming milestones):
-   - Open `src/main.cpp` in a text editor.
-   - Locate the line where the PGN file is specified, typically something like:
+3. **Run with Your Dataset**:
+   - Pass dataset paths at runtime using CLI flags:
 
-     ```cpp
-     std::ifstream pgnfile("./default_dataset.pgn");
-     ```
+   ```bash
+   ./build/chessable_cli --pgn ./your_dataset.pgn --openings ./src/pgndata.txt
+   ```
 
-   - Change `"./default_dataset.pgn"` to the path of your new `.pgn` file, e.g.:
-
-     ```cpp
-     std::ifstream pgnfile("./your_dataset.pgn");
-     ```
-
-   - Save the changes.
-
-4. **Rebuild the Application**: Following the modification of the dataset path, rebuild the application:
+4. **Rebuild the Application** after code changes:
 
    ```bash
    cmake --build build --config Release

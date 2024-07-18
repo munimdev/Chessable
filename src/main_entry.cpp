@@ -1,6 +1,8 @@
+#include "app/config_parser.h"
 #include "app/run_chessable_cli.h"
 
-int main()
+int main(int argc, char **argv)
 {
-    return runChessableCli();
+    const ChessableConfig config = parseChessableConfig(argc, argv);
+    return runChessableCli(config);
 }

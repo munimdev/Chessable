@@ -1129,7 +1129,7 @@ void getMostPlayedMove(string pgn, AVLNode<Game> *gameNode)
   cout << "Times played: " << highestOccurence->data.occurence << endl;
 }
 
-int runChessableCli()
+int runChessableCli(const ChessableConfig &config)
 {
   AVLTree<EventDate> eventDateTree; // Stores all event's Date
   AVLTree<EventLocation> eventLocationTree; // Stores all Event's location
@@ -1144,7 +1144,7 @@ int runChessableCli()
 
   cout << endl << "Loading the chess data set." << endl;
 
-  std::ifstream pgnfile("./WorldCup2021.pgn"); //open data file
+  std::ifstream pgnfile(config.pgnPath); //open data file
   pgn::GameCollection games;
   pgnfile >> games; //parse data file
 
@@ -1167,7 +1167,7 @@ int runChessableCli()
   HashTable<Event *> playerEvents(1300);
   
   std::ifstream chessDataset; //parses the pgndata.txt file for opening data
-  chessDataset.open("pgndata.txt",std::ifstream::in);
+  chessDataset.open(config.openingsPath,std::ifstream::in);
   string oname; //temp variable for storing opening name
   string EcoCode; //tmep variable for storing ECO code
   int move_number;

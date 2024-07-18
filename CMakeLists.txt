@@ -57,6 +57,7 @@ add_executable(
     chessable_cli
     src/main.cpp
     src/main_entry.cpp
+    src/app/config_parser.cpp
     src/cli/menu.cpp
 )
 target_link_libraries(chessable_cli PRIVATE pgnlib)
