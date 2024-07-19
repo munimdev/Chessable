@@ -164,8 +164,14 @@ class AVLTree
       }
       if( key < node->data ) //if key is smaller, explore left branch
         node->left = insert(node->left, key);
-      else //if key is geater, explore right branch
+      else if( key > node->data ) //if key is geater, explore right branch
         node->right = insert(node->right, key);
+      else {
+        // Duplicate policy: keep one canonical node per key.
+        // Preserve legacy behavior by updating loc to the existing node.
+        loc = node;
+        return node;
+      }
 
       node = balance(node); //balances the node
       return node; //returns the node
