@@ -111,6 +111,69 @@ template <typename T> class LinkedList
       //this->itr = root;
       //cout << "Linked list constructor" << endl; 
     }
+
+    ~LinkedList()
+    {
+      clear();
+    }
+
+    LinkedList(const LinkedList& other)
+    {
+      root = nullptr;
+      last = nullptr;
+      ploc = nullptr;
+      loc = nullptr;
+      size = 0;
+      copyFrom(other);
+    }
+
+    LinkedList& operator=(const LinkedList& other)
+    {
+      if(this == &other) {
+        return *this;
+      }
+
+      clear();
+      copyFrom(other);
+      return *this;
+    }
+
+    LinkedList(LinkedList&& other) noexcept
+    {
+      root = other.root;
+      last = other.last;
+      ploc = other.ploc;
+      loc = other.loc;
+      size = other.size;
+
+      other.root = nullptr;
+      other.last = nullptr;
+      other.ploc = nullptr;
+      other.loc = nullptr;
+      other.size = 0;
+    }
+
+    LinkedList& operator=(LinkedList&& other) noexcept
+    {
+      if(this == &other) {
+        return *this;
+      }
+
+      clear();
+
+      root = other.root;
+      last = other.last;
+      ploc = other.ploc;
+      loc = other.loc;
+      size = other.size;
+
+      other.root = nullptr;
+      other.last = nullptr;
+      other.ploc = nullptr;
+      other.loc = nullptr;
+      other.size = 0;
+      return *this;
+    }
     iterator begin()
     {
       return iterator(root);
@@ -297,24 +360,22 @@ template <typename T> class LinkedList
     }  
     void printList(node_pointer headNode)   //prints the entire linked list
     {
-      if ( !isEmpty() )   //empty check
+      if ( isEmpty() )   //empty check
+        return;
+
+      node_pointer iterator = headNode;   //iterator node
+      std::cout << "Start: " << root->data << " | End: " << last->data << std::endl;
+      std::cout << "List content: ";
+      while ( iterator != nullptr )   //loop until node points to NULL
       {
-        node_pointer iterator = headNode;   //iterator node
-        std::cout << "\e[48;2;77;0;77mStart:\x1b[0m " << root->data << " | \e[48;2;77;0;77mEnd:\x1b[0m " << last->data << std::endl;
-        std::cout << "\e[48;2;77;0;77mList content:\x1b[0m ";
-        while ( iterator != NULL )   //loop until node points to NULL
-        {
-          std::cout << iterator->data;   //print node data
-          if( iterator->next != NULL )
-            std::cout << " --> "; //pretti-fy linked list output
-          else
-            std::cout << " --> /";
-          iterator = iterator->next;   //advance to next node
-        }
-        std::cout << std::endl;
+        std::cout << iterator->data;   //print node data
+        if( iterator->next != nullptr )
+          std::cout << " --> "; //pretti-fy linked list output
+        else
+          std::cout << " --> /";
+        iterator = iterator->next;   //advance to next node
       }
-      else
-        std::cout << "\x1b[31mError: List is empty.\x1b[37m" << std::endl;
+      std::cout << std::endl;
     }
 
     void printList()
@@ -373,26 +434,18 @@ template <typename T> class LinkedList
 
     void destroyList()   //destroys each node of the list
     {
-      node_pointer iterator = root; //iterator pointer points to the first node
-      while( iterator != NULL )  //iterating until we reach last node
-      {
-        root = root->next;  //advancing root node
-        delete iterator; //deleting iterator
-        iterator = root; //iterator now points to new root
-      }
-      std::cout << "\e[0;32mList destroyed.\x1b[0;37m" << std::endl;
+      clear();
     }
 
     void printReverse(node_pointer headNode) //prints a linked list in reverse recursively given its starting node
     {
       if( isEmpty() ) //empty check
       {
-        std::cout << "\x1b[0;31mError: List is empty.\x1b[0;37m" << std::endl;
         return;
       }
-      else if(headNode == NULL ) //base case of recursive function
+      else if(headNode == nullptr ) //base case of recursive function
       {
-        std::cout << "\e[48;2;77;0;77mReverse list content:\x1b[0m ";
+        std::cout << "Reverse list content: ";
         return;
       }
       printReverse(headNode->next); //recursively calls the function
@@ -406,23 +459,64 @@ template <typename T> class LinkedList
 
     void reverseList( node_pointer headNode, node_pointer prevNode )
     {
-      if(headNode == NULL ) { //base case of recursive function
+      if(headNode == nullptr ) { //base case of recursive function
         root = prevNode; //updae the starting node when we reach last node
         return;
       }
-      if( headNode->next == NULL ) { //second base case of recursive function
+      if( headNode->next == nullptr ) { //second base case of recursive function
       //at each function call
         //cout << "\e[0;32mList succesfully reversed.\x1b[0;37m" << endl;
         headNode->next = prevNode; //node now points to it predecessor if it was the last node in the list
         root = headNode; //let the list now begin from this headNode 
       }
-      else if( headNode->next != NULL ) { ///recursive calls
+      else if( headNode->next != nullptr ) { ///recursive calls
       //calls the reverseList function revursively until we reach the last node
       //sets the root pointer to point to the last node
         reverseList(headNode->next, headNode); //recursive calls
         headNode->next = prevNode;// update next field of each node star
       }
       last = prevNode;
-      last->next = NULL;
+      if(last != nullptr) {
+        last->next = nullptr;
+      }
+    }
+
+  private:
+    void copyFrom(const LinkedList& other)
+    {
+      node_pointer cursor = other.root;
+      while(cursor != nullptr)
+      {
+        node_pointer newNode = new node_type(cursor->data);
+        if(root == nullptr)
+        {
+          root = newNode;
+          last = newNode;
+        }
+        else
+        {
+          last->next = newNode;
+          last = newNode;
+        }
+        size++;
+        cursor = cursor->next;
+      }
+      loc = nullptr;
+      ploc = nullptr;
+    }
+
+    void clear()
+    {
+      node_pointer iterator = root; //iterator pointer points to the first node
+      while( iterator != nullptr )  //iterating until we reach last node
+      {
+        root = root->next;  //advancing root node
+        delete iterator; //deleting iterator
+        iterator = root; //iterator now points to new root
+      }
+      last = nullptr;
+      ploc = nullptr;
+      loc = nullptr;
+      size = 0;
     }
 };
