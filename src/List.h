@@ -103,10 +103,10 @@ template <typename T> class LinkedList
 
     LinkedList() //linked list constructor to create an empty list
     {
-      this->root=NULL;   //initializing pointers to NULL
-      this->last = NULL;
-      this->ploc=NULL;
-      this->loc=NULL;
+      this->root=nullptr;   //initializing pointers to NULL
+      this->last = nullptr;
+      this->ploc=nullptr;
+      this->loc=nullptr;
       this->size = 0;
       //this->itr = root;
       //cout << "Linked list constructor" << endl; 
@@ -117,11 +117,11 @@ template <typename T> class LinkedList
     }
     iterator end()
     {
-      return iterator(NULL);
+      return iterator(nullptr);
     }
     bool isEmpty()   //check if list is empty
     {
-      return root==NULL;
+      return root==nullptr;
     }
     
     //i changed the whole code yesterday
@@ -139,10 +139,11 @@ template <typename T> class LinkedList
         }
         iterator() //default constructor
         {
-          this->currentNode = NULL;
+          this->currentNode = nullptr;
         }
         // reference_type operator*() const { return &currentNode; }
         pointer_type operator->() { return currentNode; }
+        pointer_type operator->() const { return currentNode; }
 
         // // Prefix increment
         // iterator& operator++() { 
@@ -181,16 +182,19 @@ template <typename T> class LinkedList
           return currentNode->data;
         }
 
-        /*// Overload for the postincrement operator ++
-        iterator operator++(int) {
-          iterator temp = *this;
-          currentNode = currentNode->next;
-          return temp;
-        }*/
+        // Overload for the preincrement operator ++
+        iterator& operator++() {
+          if(currentNode != nullptr) {
+            currentNode = currentNode->next;
+          }
+          return *this;
+        }
+
         // Overload for the postincrement operator ++
         iterator operator++( int ) {
-          currentNode = currentNode->next;
-          return iterator(currentNode);
+          iterator temp = *this;
+          ++(*this);
+          return temp;
         }
         // Overload for the preincrement operator -- in case of doubly linked link
         // iterator operator--(int) {
@@ -204,24 +208,59 @@ template <typename T> class LinkedList
     }
     
     iterator end() const {
-      return (iterator(last)->next);
+      return iterator(nullptr);
     }
     
     iterator insert(iterator position, const T& value) {
-      node_pointer newNode = new ListNode<T>(value, position.nodePtr->next);
-      if (position.nodePtr == root) 
+      if(position.currentNode == nullptr) {
+        insert(value);
+        return iterator(last);
+      }
+
+      node_pointer newNode = new node_type(value);
+      newNode->next = position.currentNode->next;
+      position.currentNode->next = newNode;
+      if(position.currentNode == last) {
         last = newNode;
-      position.nodePtr->next = newNode;
-      return position;
+      }
+      size++;
+      return iterator(newNode);
     }
 
     iterator erase(iterator position) {
-      node_pointer toDelete = position.nodePtr->next;
-      position.nodePtr->next = position.nodePtr->next->next;
-      if (toDelete == last) 
-        last = position.nodePtr;
-      delete toDelete;
-      return position;
+      if(position.currentNode == nullptr || root == nullptr) {
+        return end();
+      }
+
+      node_pointer target = position.currentNode;
+      node_pointer nextNode = target->next;
+
+      if(target == root) {
+        root = root->next;
+        if(last == target) {
+          last = root;
+        }
+        delete target;
+        size--;
+        return iterator(nextNode);
+      }
+
+      node_pointer previous = root;
+      while(previous != nullptr && previous->next != target) {
+        previous = previous->next;
+      }
+
+      if(previous == nullptr) {
+        return end();
+      }
+
+      previous->next = nextNode;
+      if(last == target) {
+        last = previous;
+      }
+      delete target;
+      size--;
+      return iterator(nextNode);
     }
     // void insert(node_type inputNode)   //inserts a new node at the end of list
     // {
