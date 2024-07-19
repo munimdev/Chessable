@@ -1,6 +1,7 @@
 #pragma once
+#include <algorithm>
 #include <iostream>
-using namespace std;
+#include <string>
 
 template <class T> 
 class AVLNode //definition for template node class for AVL
@@ -20,7 +21,7 @@ class AVLNode //definition for template node class for AVL
       }
 
       //Check whether this node is a leaf node or not
-      bool isLeaf() 
+      bool isLeaf() const
       { 
         return !left && !right; 
       }
@@ -36,43 +37,43 @@ class AVLTree
 
     AVLTree() //default constructor
     {
-      this->root = NULL;
-      this->loc = NULL;
-      this->ploc = NULL;
+      this->root = nullptr;
+      this->loc = nullptr;
+      this->ploc = nullptr;
     }
 
     void destroyTree(AVLNode<T>* &node) // destroys an AVL tree (all nodes) using recursion in psot order
     {
-      if(node != NULL) {
+      if(node != nullptr) {
         destroyTree(node->left);
         destroyTree(node->right);
         delete node;
       }
-      node = NULL;
+      node = nullptr;
     }
 
-    bool isEmpty() { //function to check if the tree is empty
-      return root == NULL; //checks if tree is empty
+    bool isEmpty() const { //function to check if the tree is empty
+      return root == nullptr; //checks if tree is empty
     }
 
     void inOrderTraverse(AVLNode<T>* node) { //prints the tree using InOrderTraversal
       if(node) {
         inOrderTraverse(node->left);
-        cout << node->data << endl;
+        std::cout << node->data << std::endl;
         inOrderTraverse(node->right);
       }
       if (node == root)
-        cout << endl;
+        std::cout << std::endl;
     }
 
     void preOrderTraverse(AVLNode<T>* node) { //prints the tree using InOrderTraversal
       if(node) {
-        cout << node->data << " ";
+        std::cout << node->data << " ";
         preOrderTraverse(node->left);
         preOrderTraverse(node->right);
       }
       if (node == root) 
-        cout << endl;
+        std::cout << std::endl;
     }
 
     void postOrderTraverse(AVLNode<T>* node) //pass address of root node to print
@@ -80,22 +81,22 @@ class AVLTree
       if(node) {
         postOrderTraverse(node->left);
         postOrderTraverse(node->right);
-        cout << node->data << " ";
+        std::cout << node->data << " ";
       }
       if (node == root) 
-        cout << endl;
+        std::cout << std::endl;
     }
 
     void search(AVLNode<T>* node, T value) //recursively searches a value in the avl tree. if found, loc stores its address and ploc stores its parent's address
     {
-      if(node == NULL) { //if value was not found, simply return
-        loc = NULL;
+      if(node == nullptr) { //if value was not found, simply return
+        loc = nullptr;
         return;
       }
       else if(node->data == value) {
         loc = node;
         if(node == root)
-          ploc = NULL;
+          ploc = nullptr;
         return;
       }
       else {
@@ -123,7 +124,7 @@ class AVLTree
 
     AVLNode<T>* balance(AVLNode<T> *node) //balances a node if it is unbalanced
     {
-      node->height = max(height(node->left), height(node->right))+1; //updates the height of the node;
+      node->height = std::max(height(node->left), height(node->right))+1; //updates the height of the node;
       int balanceFactor = getBalance(node); //save the balance factor of the node. if it is >1 or <-1, we need to perform balancing operations
 
       AVLNode<T> *temp;
@@ -156,7 +157,7 @@ class AVLTree
     //uses recursion
     AVLNode<T>* insert(AVLNode<T> *node, T key)
     {
-      if(node == NULL) { //when logical position is found, insert the new node with the given data and return it to parent
+      if(node == nullptr) { //when logical position is found, insert the new node with the given data and return it to parent
         AVLNode<T> *newNode = new AVLNode<T>(key);
         loc = newNode; //save the address of the newly insrted node in loc
         return newNode;
@@ -183,6 +184,10 @@ class AVLTree
     //height and balancing are done as the function calls are popped
     AVLNode<T>* remove(AVLNode<T>* node, AVLNode<T>* pnode, T key)
     {
+      if(node == nullptr) {
+        return nullptr;
+      }
+
       if( key < node->data )
         node->left = remove(node->left, node, key);
       else if( key > node->data )
@@ -192,10 +197,10 @@ class AVLTree
         AVLNode<T> *parentNode = pnode;
         if( self->isLeaf() ) { // See if it's a leaf node
           if( self==root ) // If it is a leaf and there is no parent, then the tree will be emptied
-            root = NULL;
+            root = nullptr;
           // If it's a leaf node, simply remove it
           delete self; //delete the node
-          node = NULL; //and set it to null
+          node = nullptr; //and set it to null
         }
         else {
           AVLNode<T> *successor = maximumNode(self->left);
@@ -206,7 +211,7 @@ class AVLTree
           AVLNode<T> *leftChild = self->left; // Get the current node's left and right branches
           AVLNode<T> *rightChild = self->right;
           delete self; //delete the node as it is not needed anymore
-          node = NULL; //set it to null
+          node = nullptr; //set it to null
 
           successor->left = leftChild; //as successor will replace that node, update the branches
           successor->right = rightChild;
@@ -216,7 +221,7 @@ class AVLTree
           return successor;
         }
       }
-      if(node != NULL) //balance the node if it is not null
+      if(node != nullptr) //balance the node if it is not null
         node = balance(node);
   
       return node; //return the node to its invoking function
@@ -226,27 +231,27 @@ class AVLTree
     void unlinkSuccessor(AVLNode<T>* node)
     {
       search(node->data); //calls the recursive search function to find the node's parent
-      if(ploc == NULL)
+      if(ploc == nullptr)
         return;
       //unlink the node from its parent
       //2 cases whethe its a left child or a right child
       if ( ploc->left == loc ) {
-        ploc->left = NULL;
+        ploc->left = nullptr;
         if(loc->right)
           ploc->left = loc->right;
       }
       else if ( ploc->right == loc ) {
-        ploc->right = NULL;
+        ploc->right = nullptr;
         if( loc->left )
           ploc->right = loc->left;
       }
       //update the height of the parent as its child was unlinked
-      ploc->height = max(height(ploc->left), height(ploc->right))+1;
+      ploc->height = std::max(height(ploc->left), height(ploc->right))+1;
     }
 
-    int height(AVLNode<T> *node) //returns height of a node 
+    int height(const AVLNode<T> *node) const //returns height of a node
     {
-      if(node == NULL) //returns -1 for a non existent node
+      if(node == nullptr) //returns -1 for a non existent node
         return -1;
       else
         return node->height; //simply return the node height
@@ -256,9 +261,9 @@ class AVLTree
     //recursively finds the left most node
     AVLNode<T> *minimumNode(AVLNode<T>* node)
     {
-      if(node == NULL) //base case
-        return NULL;
-      else if(node->left == NULL) //2nd base case, vlaue found
+      if(node == nullptr) //base case
+        return nullptr;
+      else if(node->left == nullptr) //2nd base case, vlaue found
         return node;
       else
         return minimumNode(node->left);
@@ -268,9 +273,9 @@ class AVLTree
     //recursively finds the right most node
     AVLNode<T> *maximumNode(AVLNode<T>* node)
     {
-      if(node == NULL) //base case
-        return NULL;
-      else if(node->right == NULL) //2nd base case, value found
+      if(node == nullptr) //base case
+        return nullptr;
+      else if(node->right == nullptr) //2nd base case, value found
         return node;
       else
         return maximumNode(node->right);
@@ -285,8 +290,8 @@ class AVLTree
       y->right = x;
       x->left = temp;
       // Update heights
-      x->height = max(height(x->left), height(x->right)) + 1;
-      y->height = max(height(y->left), height(y->right)) + 1;
+      x->height = std::max(height(x->left), height(x->right)) + 1;
+      y->height = std::max(height(y->left), height(y->right)) + 1;
       //Return new root
       return y;
     }
@@ -300,41 +305,41 @@ class AVLTree
       y->left = x;
       x->right = temp;
       // Update heights
-      x->height = max(height(x->left), height(x->right)) + 1;
-      y->height = max(height(y->left), height(y->right)) + 1;
+      x->height = std::max(height(x->left), height(x->right)) + 1;
+      y->height = std::max(height(y->left), height(y->right)) + 1;
       //Return new root
       return y;
     }
 
-    int getBalance(AVLNode<T> *node) // Get Balance factor of a node
+    int getBalance(const AVLNode<T> *node) const // Get Balance factor of a node
     {
-      if(node == NULL) //return 0 if node is invalid
+      if(node == nullptr) //return 0 if node is invalid
         return 0;
       return ( height(node->left) - height(node->right) ); //else call the getter function
     }
 
     void remove(T value) //remove function with only 1 parameter that calls the function frm the root node
     {
-      root = remove(root, NULL, value);
+      root = remove(root, nullptr, value);
     }
 
-    void printHelper(AVLNode<T> *root, string indent, bool last) {
+    void printHelper(AVLNode<T> *node, std::string indent, bool last) {
 		// print the tree structure on the screen
-	   	if (root != nullptr) {
-		   cout << indent;
+	   	if (node != nullptr) {
+		   std::cout << indent;
 		   if (last) {
-		      cout<<"R----";
+		      std::cout<<"R----";
 		      indent += "     ";
 		   } 
        else {
-		      cout<<"L----";
+		      std::cout<<"L----";
 		      indent += "|    ";
 		   }
 
-		   cout << root->data << "( H = " << root->height << ")" << endl;
+		   std::cout << node->data << "( H = " << node->height << ")" << std::endl;
 
-		   printHelper(root->left, indent, false);
-		   printHelper(root->right, indent, true);
+		   printHelper(node->left, indent, false);
+		   printHelper(node->right, indent, true);
 		}
 	}
 

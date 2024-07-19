@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 template <typename T> class ListNode
 {
@@ -260,21 +261,21 @@ template <typename T> class LinkedList
       if ( !isEmpty() )   //empty check
       {
         node_pointer iterator = headNode;   //iterator node
-        cout << "\e[48;2;77;0;77mStart:\x1b[0m " << root->data << " | \e[48;2;77;0;77mEnd:\x1b[0m " << last->data << endl;
-        cout << "\e[48;2;77;0;77mList content:\x1b[0m ";
+        std::cout << "\e[48;2;77;0;77mStart:\x1b[0m " << root->data << " | \e[48;2;77;0;77mEnd:\x1b[0m " << last->data << std::endl;
+        std::cout << "\e[48;2;77;0;77mList content:\x1b[0m ";
         while ( iterator != NULL )   //loop until node points to NULL
         {
-          cout << iterator->data;   //print node data
+          std::cout << iterator->data;   //print node data
           if( iterator->next != NULL )
-            cout << " --> "; //pretti-fy linked list output
+            std::cout << " --> "; //pretti-fy linked list output
           else
-            cout << " --> /";
+            std::cout << " --> /";
           iterator = iterator->next;   //advance to next node
         }
-        cout << endl;
+        std::cout << std::endl;
       }
       else
-        cout << "\x1b[31mError: List is empty.\x1b[37m" << endl;
+        std::cout << "\x1b[31mError: List is empty.\x1b[37m" << std::endl;
     }
 
     void printList()
@@ -340,28 +341,28 @@ template <typename T> class LinkedList
         delete iterator; //deleting iterator
         iterator = root; //iterator now points to new root
       }
-      cout << "\e[0;32mList destroyed.\x1b[0;37m" << endl;
+      std::cout << "\e[0;32mList destroyed.\x1b[0;37m" << std::endl;
     }
 
     void printReverse(node_pointer headNode) //prints a linked list in reverse recursively given its starting node
     {
       if( isEmpty() ) //empty check
       {
-        cout << "\x1b[0;31mError: List is empty.\x1b[0;37m" << endl;
+        std::cout << "\x1b[0;31mError: List is empty.\x1b[0;37m" << std::endl;
         return;
       }
       else if(headNode == NULL ) //base case of recursive function
       {
-        cout << "\e[48;2;77;0;77mReverse list content:\x1b[0m ";
+        std::cout << "\e[48;2;77;0;77mReverse list content:\x1b[0m ";
         return;
       }
       printReverse(headNode->next); //recursively calls the function
-      cout << headNode->data << " "; //output node data
+      std::cout << headNode->data << " "; //output node data
 
       if( headNode != root ) //pretti-fy linked list output
-        cout << "--> ";
+        std::cout << "--> ";
       else
-        cout << "--> /" << endl;
+        std::cout << "--> /" << std::endl;
     }
 
     void reverseList( node_pointer headNode, node_pointer prevNode )
