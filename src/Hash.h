@@ -1,6 +1,7 @@
 //https://stackoverflow.com/questions/8317508/hash-function-for-a-string
 #include "List.h"
 #include <array>
+#include <cstddef>
 #include <cmath>
 #include <iostream>
 
@@ -38,7 +39,7 @@ class HashTable
         buckets = 1;
       this->totalBuckets = buckets;
       currentSize = 0;
-      hashTable = new HashNode<nodeType>[totalBuckets];
+      hashTable = new HashNode<nodeType>[static_cast<std::size_t>(totalBuckets)];
       //will need to change .fill to some other value as fill(-1) works for int keyType only
       //hashTable.fill(-1); //fills the entire array with -1 values
     }
@@ -115,9 +116,9 @@ class HashTable
     int hashFunction(const std::string& x)
     {
       int hash = 37;
-      for(int i=0; i<x.size(); i++)
+      for(std::size_t i = 0; i < x.size(); i++)
       {
-        hash = (hash*54059) ^ (int(x[i]) * 76793);
+        hash = (hash * 54059) ^ (static_cast<int>(x[i]) * 76793);
       }
       return std::abs(hash % totalBuckets);
     }
@@ -280,7 +281,7 @@ class HashTable
 
       totalBuckets = newBucketCount;
       currentSize = 0;
-      hashTable = new HashNode<nodeType>[totalBuckets];
+      hashTable = new HashNode<nodeType>[static_cast<std::size_t>(totalBuckets)];
 
       for(int i = 0; i < oldBucketCount; i++)
       {
