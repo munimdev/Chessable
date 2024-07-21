@@ -104,30 +104,33 @@ class AVLTree
         std::cout << std::endl;
     }
 
-    void search(AVLNode<T>* node, T value) //recursively searches a value in the avl tree. if found, loc stores its address and ploc stores its parent's address
+    void findNodeAndParent(AVLNode<T>* node, T value, AVLNode<T>*& foundNode, AVLNode<T>*& parentNode)
     {
-      if(node == nullptr) { //if value was not found, simply return
-        loc = nullptr;
-        return;
-      }
-      else if(node->data == value) {
-        loc = node;
-        if(node == root)
-          ploc = nullptr;
-        return;
-      }
-      else {
-        if(value < node->data) { //search left branch
-          loc = node->left;
-          ploc = node;
-          search(node->left, value);
+      foundNode = nullptr;
+      parentNode = nullptr;
+
+      AVLNode<T>* current = node;
+      AVLNode<T>* parent = nullptr;
+      while(current != nullptr)
+      {
+        if(current->data == value)
+        {
+          foundNode = current;
+          parentNode = parent;
+          return;
         }
-        else if(value > node->data) { //search right branch
-          loc = node->right;
-          ploc = node;
-          search(node->right, value);
-        }
+
+        parent = current;
+        if(value < current->data)
+          current = current->left;
+        else
+          current = current->right;
       }
+    }
+
+    void search(AVLNode<T>* node, T value) //searches a value in the avl tree. if found, loc stores its address and ploc stores its parent's address
+    {
+      findNodeAndParent(node, value, loc, ploc);
     }
 
     bool search(T value)
@@ -253,23 +256,26 @@ class AVLTree
     // Unlinks a node from its parent and children
     void unlinkSuccessor(AVLNode<T>* node)
     {
-      search(node->data); //calls the recursive search function to find the node's parent
-      if(ploc == nullptr)
+      AVLNode<T>* foundNode = nullptr;
+      AVLNode<T>* parentNode = nullptr;
+      findNodeAndParent(root, node->data, foundNode, parentNode);
+      if(parentNode == nullptr || foundNode == nullptr)
         return;
+
       //unlink the node from its parent
       //2 cases whethe its a left child or a right child
-      if ( ploc->left == loc ) {
-        ploc->left = nullptr;
-        if(loc->right)
-          ploc->left = loc->right;
+      if ( parentNode->left == foundNode ) {
+        parentNode->left = nullptr;
+        if(foundNode->right)
+          parentNode->left = foundNode->right;
       }
-      else if ( ploc->right == loc ) {
-        ploc->right = nullptr;
-        if( loc->left )
-          ploc->right = loc->left;
+      else if ( parentNode->right == foundNode ) {
+        parentNode->right = nullptr;
+        if( foundNode->left )
+          parentNode->right = foundNode->left;
       }
       //update the height of the parent as its child was unlinked
-      ploc->height = std::max(height(ploc->left), height(ploc->right))+1;
+      parentNode->height = std::max(height(parentNode->left), height(parentNode->right))+1;
     }
 
     int height(const AVLNode<T> *node) const //returns height of a node
