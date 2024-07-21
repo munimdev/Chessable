@@ -42,6 +42,23 @@ class AVLTree
       this->ploc = nullptr;
     }
 
+    ~AVLTree()
+    {
+      clear();
+    }
+
+    AVLTree(const AVLTree&) = delete;
+    AVLTree& operator=(const AVLTree&) = delete;
+    AVLTree(AVLTree&&) = delete;
+    AVLTree& operator=(AVLTree&&) = delete;
+
+    void clear()
+    {
+      destroyTree(root);
+      loc = nullptr;
+      ploc = nullptr;
+    }
+
     void destroyTree(AVLNode<T>* &node) // destroys an AVL tree (all nodes) using recursion in psot order
     {
       if(node != nullptr) {
