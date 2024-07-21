@@ -214,7 +214,8 @@ class HashTable
     {
       for (int i = 0; i < totalBuckets; i++)
       {
-        std::cout << "Index " << i << ": " << hashTable[i] << std::endl;
+        std::cout << "Index " << i << ": key=\"" << hashTable[i].key
+                  << "\", values=" << hashTable[i].list.size << std::endl;
       }
       std::cout << std::endl;
     }
