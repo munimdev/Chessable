@@ -151,6 +151,12 @@ class AVLTree
       return find(value) != nullptr;
     }
 
+    template <typename Visitor>
+    void forEachInOrder(Visitor&& visitor) const
+    {
+      forEachInOrderImpl(root, visitor);
+    }
+
     AVLNode<T>* balance(AVLNode<T> *node) //balances a node if it is unbalanced
     {
       node->height = std::max(height(node->left), height(node->right))+1; //updates the height of the node;
@@ -392,5 +398,16 @@ class AVLTree
 	}
 
   private:
+    template <typename Visitor>
+    void forEachInOrderImpl(const AVLNode<T>* node, Visitor& visitor) const
+    {
+      if(node == nullptr)
+        return;
+
+      forEachInOrderImpl(node->left, visitor);
+      visitor(node->data);
+      forEachInOrderImpl(node->right, visitor);
+    }
+
     AVLNode<T>* root; //identifies the root node of AVL
 };

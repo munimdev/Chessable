@@ -350,41 +350,29 @@ void getTotalGamesPlayedAtEvent(string eventName, HashTable<Game*> &gameTable)
 }
 
 //outputs all the events played at a certain location
-//takes as input the location and a pointer to an AVLNode that stores Event data
-//Uses inOrder recursive traversal and prins the event data if its location matches the input location
-void getEventsOfSameLocation(AVLNode<Event>* eventNode, string location)
+void getEventsOfSameLocation(const AVLTree<Event>& eventTree, const string& location)
 {
-  if(eventNode) //check if node is valid
-  {
-    getEventsOfSameLocation(eventNode->left, location); //explore left branch
-    if(eventNode->data.eventLocation->eventLocation == location ) //print node data if location matches
-      cout << eventNode->data << endl;
-    getEventsOfSameLocation(eventNode->right, location); //epxlore right branch
-  }
+  eventTree.forEachInOrder([&location](const Event& event) {
+    if(event.eventLocation->eventLocation == location)
+      cout << event << endl;
+  });
 }
 
 //outputs all the events played on a certain year
-//takes as input the year and a pointer to an AVLNode that stores Event data
-//Uses inOrder recursive traversal and prints the event data if its year matches the input year
-void getEventsByYear(AVLNode<Event>* eventNode, int year)
+//takes as input the year
+void getEventsByYear(const AVLTree<Event>& eventTree, int year)
 {
-  if (eventNode) //check if node is valid
-  {
-    getEventsByYear(eventNode->left, year);
-    if(eventNode->data.eventDate->year == year)
-      cout << eventNode->data << endl;
-    getEventsByYear(eventNode->right,  year);
-  }
+  eventTree.forEachInOrder([year](const Event& event) {
+    if(event.eventDate->year == year)
+      cout << event << endl;
+  });
 }
 
-void printAllEvents( AVLNode<Event> *eventNode ) //display the events in alphabetical order or sorted according to their date
+void printAllEvents(const AVLTree<Event>& eventTree) //display the events in alphabetical order or sorted according to their date
 {
-  if(eventNode) //base case of recursive function
-  {
-    printAllEvents(eventNode->left);
-    cout << eventNode->data << endl; //print event data
-    printAllEvents(eventNode->right);
-  }
+  eventTree.forEachInOrder([](const Event& event) {
+    cout << event << endl; //print event data
+  });
 }
 
 //if two events have the same name, then they must be the same Event (events can have similar locations or dates, but never names)
@@ -1380,7 +1368,7 @@ int runChessableCli(const ChessableConfig &config)
       case 7:
       {
         cout << "\e[0;32mFollowing tournaments are available in our database:\x1b[0m " << endl << endl;
-        printAllEvents(eventTree.rootNode());
+        printAllEvents(eventTree);
       }; break;
 
       // Pretty Print Event List
@@ -1395,7 +1383,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter year:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        getEventsByYear(eventTree.rootNode(), stoi(userInput));
+        getEventsByYear(eventTree, stoi(userInput));
       }; break;
 
       // Get Total Games Played At Event
@@ -1415,7 +1403,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getEventsOfSameLocation(eventTree.rootNode(), userInput);
+        getEventsOfSameLocation(eventTree, userInput);
       }; break;
 
       // Players that attened certain event
