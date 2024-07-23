@@ -1380,7 +1380,7 @@ int runChessableCli(const ChessableConfig &config)
       case 7:
       {
         cout << "\e[0;32mFollowing tournaments are available in our database:\x1b[0m " << endl << endl;
-        printAllEvents(eventTree.root);
+        printAllEvents(eventTree.rootNode());
       }; break;
 
       // Pretty Print Event List
@@ -1395,7 +1395,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter year:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        getEventsByYear(eventTree.root, stoi(userInput));
+        getEventsByYear(eventTree.rootNode(), stoi(userInput));
       }; break;
 
       // Get Total Games Played At Event
@@ -1415,7 +1415,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getEventsOfSameLocation(eventTree.root, userInput);
+        getEventsOfSameLocation(eventTree.rootNode(), userInput);
       }; break;
 
       // Players that attened certain event
@@ -1435,7 +1435,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getVariationsOfOpenings(userInput, openingsTree.root);
+        getVariationsOfOpenings(userInput, openingsTree.rootNode());
       }; break;
 
       //Gets lifetime score between 2 players
@@ -1488,7 +1488,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter PGN:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getMostPlayedMove(userInput, gameTree.root);
+        getMostPlayedMove(userInput, gameTree.rootNode());
       }; break;
 
       //prints all games of a player played in a certain year
@@ -1517,7 +1517,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter lower bound for average rating:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        filterGamesByRating(stoi(userInput), gameTree.root);
+        filterGamesByRating(stoi(userInput), gameTree.rootNode());
       }; break;
 
       case 22:
@@ -1525,7 +1525,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter upper bound for total moves:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        filterGamesByMoves(stoi(userInput), gameTree.root);
+        filterGamesByMoves(stoi(userInput), gameTree.rootNode());
       }; break;
   }
   } while (choice != -1);

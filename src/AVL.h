@@ -31,8 +31,6 @@ template <class T>
 class AVLTree
 {
   public:
-    AVLNode<T>* root; //identifies the root node of AVL
-
     AVLTree() //default constructor
     {
       this->root = nullptr;
@@ -65,6 +63,16 @@ class AVLTree
 
     bool isEmpty() const { //function to check if the tree is empty
       return root == nullptr; //checks if tree is empty
+    }
+
+    AVLNode<T>* rootNode()
+    {
+      return root;
+    }
+
+    const AVLNode<T>* rootNode() const
+    {
+      return root;
     }
 
     void inOrderTraverse(AVLNode<T>* node) { //prints the tree using InOrderTraversal
@@ -382,4 +390,7 @@ class AVLTree
 	void prettyPrint() { // print the tree structure on the screen
 		printHelper(this->root, "", true);
 	}
+
+  private:
+    AVLNode<T>* root; //identifies the root node of AVL
 };
