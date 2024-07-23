@@ -787,17 +787,13 @@ class OpeningNode
 
 //This functional will go through the list of chess openings and find all the variations that the inputted opening has
 //Take as input the opening name
-//revursive function
-void getVariationsOfOpenings(string openingName, AVLNode<OpeningNode> *openingNode)
+void getVariationsOfOpenings(const string& openingName, const AVLTree<OpeningNode>& openingsTree)
 {
-  if(openingNode)
-  {
-    getVariationsOfOpenings(openingName, openingNode->left); //explore left branch
+  openingsTree.forEachInOrder([&openingName](const OpeningNode& opening) {
     //if the input opening matches with a variation, print it
-    if( openingNode->data.openingName.substr(0, openingNode->data.openingName.find(":")) == openingName )
-      cout << openingNode->data << endl;
-    getVariationsOfOpenings(openingName, openingNode->right); //explore right branch
-  }
+    if(opening.openingName.substr(0, opening.openingName.find(":")) == openingName)
+      cout << opening << endl;
+  });
 }
 
 //outputs all the openings of an ECO object 
@@ -1410,7 +1406,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getVariationsOfOpenings(userInput, openingsTree.rootNode());
+        getVariationsOfOpenings(userInput, openingsTree);
       }; break;
 
       //Gets lifetime score between 2 players

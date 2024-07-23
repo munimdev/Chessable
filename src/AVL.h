@@ -65,16 +65,6 @@ class AVLTree
       return root == nullptr; //checks if tree is empty
     }
 
-    AVLNode<T>* rootNode()
-    {
-      return root;
-    }
-
-    const AVLNode<T>* rootNode() const
-    {
-      return root;
-    }
-
     void inOrderTraverse(AVLNode<T>* node) { //prints the tree using InOrderTraversal
       if(node) {
         inOrderTraverse(node->left);
