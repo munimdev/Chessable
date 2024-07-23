@@ -15,8 +15,8 @@ class AVLNode //definition for template node class for AVL
       AVLNode(T value) //default constructor
       {
         this->data=value; //sets data equal to passed value
-        this->left=NULL;
-        this->right=NULL;
+        this->left = nullptr;
+        this->right = nullptr;
         this->height=0; //height of a leaf node is 0
       }
 
@@ -32,14 +32,10 @@ class AVLTree
 {
   public:
     AVLNode<T>* root; //identifies the root node of AVL
-    AVLNode<T>* loc; //loc and ploc help in searching nodes
-    AVLNode<T>* ploc;
 
     AVLTree() //default constructor
     {
       this->root = nullptr;
-      this->loc = nullptr;
-      this->ploc = nullptr;
     }
 
     ~AVLTree()
@@ -55,8 +51,6 @@ class AVLTree
     void clear()
     {
       destroyTree(root);
-      loc = nullptr;
-      ploc = nullptr;
     }
 
     void destroyTree(AVLNode<T>* &node) // destroys an AVL tree (all nodes) using recursion in psot order
@@ -104,7 +98,7 @@ class AVLTree
         std::cout << std::endl;
     }
 
-    void findNodeAndParent(AVLNode<T>* node, T value, AVLNode<T>*& foundNode, AVLNode<T>*& parentNode)
+    void findNodeAndParent(AVLNode<T>* node, T value, AVLNode<T>*& foundNode, AVLNode<T>*& parentNode) const
     {
       foundNode = nullptr;
       parentNode = nullptr;
@@ -128,18 +122,25 @@ class AVLTree
       }
     }
 
-    void search(AVLNode<T>* node, T value) //searches a value in the avl tree. if found, loc stores its address and ploc stores its parent's address
+    AVLNode<T>* find(T value)
     {
-      findNodeAndParent(node, value, loc, ploc);
+      AVLNode<T>* foundNode = nullptr;
+      AVLNode<T>* parentNode = nullptr;
+      findNodeAndParent(this->root, value, foundNode, parentNode);
+      return foundNode;
+    }
+
+    const AVLNode<T>* find(T value) const
+    {
+      AVLNode<T>* foundNode = nullptr;
+      AVLNode<T>* parentNode = nullptr;
+      findNodeAndParent(this->root, value, foundNode, parentNode);
+      return foundNode;
     }
 
     bool search(T value)
     {
-      search(this->root, value);
-      if(loc)
-        return true;
-      else
-        return false;
+      return find(value) != nullptr;
     }
 
     AVLNode<T>* balance(AVLNode<T> *node) //balances a node if it is unbalanced
@@ -175,21 +176,20 @@ class AVLTree
 
     //inserts a node in the AVL tree with the given key value
     //uses recursion
-    AVLNode<T>* insert(AVLNode<T> *node, T key)
+    AVLNode<T>* insert(AVLNode<T> *node, T key, AVLNode<T>*& insertedNode)
     {
       if(node == nullptr) { //when logical position is found, insert the new node with the given data and return it to parent
         AVLNode<T> *newNode = new AVLNode<T>(key);
-        loc = newNode; //save the address of the newly insrted node in loc
+        insertedNode = newNode;
         return newNode;
       }
       if( key < node->data ) //if key is smaller, explore left branch
-        node->left = insert(node->left, key);
+        node->left = insert(node->left, key, insertedNode);
       else if( key > node->data ) //if key is geater, explore right branch
-        node->right = insert(node->right, key);
+        node->right = insert(node->right, key, insertedNode);
       else {
         // Duplicate policy: keep one canonical node per key.
-        // Preserve legacy behavior by updating loc to the existing node.
-        loc = node;
+        insertedNode = node;
         return node;
       }
 
@@ -197,9 +197,16 @@ class AVLTree
       return node; //returns the node
     }
 
+    AVLNode<T>* insertAndGet(T key)
+    {
+      AVLNode<T>* insertedNode = nullptr;
+      root = insert(root, key, insertedNode);
+      return insertedNode;
+    }
+
     void insert(T key) //insert function with only 1 paramter
     {
-      root = insert(root, key);
+      (void)insertAndGet(key);
     } 
 
     //removes a node in the avl tree using recursion

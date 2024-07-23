@@ -66,8 +66,11 @@ target_compile_options(chessable_cli PRIVATE ${CHESSABLE_WARNING_FLAGS})
 
 include(CTest)
 if(BUILD_TESTING)
-    add_custom_target(
-        chessable_no_tests
-        COMMAND ${CMAKE_COMMAND} -E echo "No tests are configured yet."
+    add_executable(
+        ds_smoke_tests
+        tests/ds_smoke_tests.cpp
     )
+    target_include_directories(ds_smoke_tests PRIVATE src src/pgnlib)
+    target_compile_options(ds_smoke_tests PRIVATE ${CHESSABLE_WARNING_FLAGS})
+    add_test(NAME ds_smoke_tests COMMAND ds_smoke_tests)
 endif()

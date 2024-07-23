@@ -80,11 +80,11 @@ void ECO::getOpenings()
 //searches the EcoCode within the AVLTree and prints all its opening if its found 
 void getOpenings(string EcoCode, AVLTree<ECO> &ecoTree)
 {
-  ecoTree.search(ECO(EcoCode)); //searches an EcoNode for the given EcoCode value
+  AVLNode<ECO>* ecoNode = ecoTree.find(ECO(EcoCode));
   //calls the getOpenings() function if the node was found in the tree
-  if(ecoTree.loc)
+  if(ecoNode)
   {
-    ecoTree.loc->data.getOpenings(); //prints all the openings of an Eco object
+    ecoNode->data.getOpenings(); //prints all the openings of an Eco object
   }
   else
     cout << "\e[0;31mThat ECO code does not exist!\x1b[0m" << endl;
@@ -1177,26 +1177,27 @@ int runChessableCli(const ChessableConfig &config)
   while(chessDataset.good()) //loop over each line until EOF is reached
   {
     getline(chessDataset, EcoCode, '\t'); //get ecocode
-    if( !ecoTree.search(ECO(EcoCode) ))
-      ecoTree.insert(EcoCode); //insert into ecoTree
+    AVLNode<ECO>* ecoNode = ecoTree.find(ECO(EcoCode));
+    if(ecoNode == nullptr)
+      ecoNode = ecoTree.insertAndGet(ECO(EcoCode)); //insert into ecoTree
 
     getline(chessDataset, oname, '\t'); //get opening name
     getline(chessDataset, pgn); //get pgn of the opening
 
     int totalMoves = extractMaximum(pgn); //returns the number of moves played in the opening
-    openingsTree.insert(OpeningNode{oname, totalMoves}); //as each opening is always unique, we need to insert it
+    AVLNode<OpeningNode>* openingNode = openingsTree.insertAndGet(OpeningNode{oname, totalMoves}); //as each opening is always unique, we need to insert it
     stringstream moveStream(pgn); //creates a string stream of opening pgn for move insertion purposes
     while(moveStream >> move_number >> dot >> whiteMove)
     {
-      openingsTree.loc->data.setofMoves[move_number-1].moveNumber = move_number;
-      openingsTree.loc->data.setofMoves[move_number-1].move[0] = whiteMove;
+      openingNode->data.setofMoves[move_number-1].moveNumber = move_number;
+      openingNode->data.setofMoves[move_number-1].move[0] = whiteMove;
       if(moveStream >> blackMove)
-        openingsTree.loc->data.setofMoves[move_number-1].move[1] = blackMove;
+        openingNode->data.setofMoves[move_number-1].move[1] = blackMove;
       else
-        openingsTree.loc->data.setofMoves[move_number-1].move[1] = "";
+        openingNode->data.setofMoves[move_number-1].move[1] = "";
     }
-    ecoTree.loc->data.addOpening(openingsTree.loc->data); //add the opening to the ECO node
-    openingsTree.loc->data.belongsToECO = &ecoTree.loc->data; //add a pointer of ECO to the opening that was just inserted
+    ecoNode->data.addOpening(openingNode->data); //add the opening to the ECO node
+    openingNode->data.belongsToECO = &ecoNode->data; //add a pointer of ECO to the opening that was just inserted
     chessDataset.peek(); //checks the state of the stream - whether we have reached EOF or not
   }
   chessDataset.close(); //close the file
@@ -1220,44 +1221,31 @@ int runChessableCli(const ChessableConfig &config)
       makeNewEvent = false; //else set it to fast
     }
     
-    if( !eventLocationTree.search( itr->tags()["Site"].value() ) )
-    { //create a new location node if it does not exist
-      eventLocationTree.insert(itr->tags()["Site"].value());
-    }
-    if(!eventDateTree.search(itr->tags()["EventDate"].value()))
-    { //create a new date noded if it exists
-      //EventDate *NewDate = new EventDate(itr->tags()["EventDate"].value());
-      eventDateTree.insert(itr->tags()["EventDate"].value());
-    }
+    AVLNode<EventLocation>* eventLocationNode = eventLocationTree.find(itr->tags()["Site"].value());
+    if(eventLocationNode == nullptr)
+      eventLocationNode = eventLocationTree.insertAndGet(itr->tags()["Site"].value());
+    AVLNode<EventDate>* eventDateNode = eventDateTree.find(itr->tags()["EventDate"].value());
+    if(eventDateNode == nullptr)
+      eventDateNode = eventDateTree.insertAndGet(itr->tags()["EventDate"].value());
     if(makeNewEvent) //if we are creating a new event node in the eventTree
     {
-      eventTree.insert(Event(itr->tags()["Event"].value(), &eventLocationTree.loc->data, &eventDateTree.loc->data));
-      eventPtr = &eventTree.loc->data; //save the address of the newly created event
+      AVLNode<Event>* eventNode = eventTree.insertAndGet(Event(itr->tags()["Event"].value(), &eventLocationNode->data, &eventDateNode->data));
+      eventPtr = &eventNode->data; //save the address of the newly created event
     } 
     else //if the event node already exists in the list, we will need to save its address
     {
       eventPtr = eventGames.hashTable[eventGames.getIndex(itr->tags()["Event"].value())].list.root->data->playedInEvent;
     }
 
-    if(!playerTree.search(itr->tags()["White"].value()))
-    {
-      playerTree.insert(itr->tags()["White"].value());
-      whitePlayerSidePtr = &playerTree.loc->data;
-    }
-    else
-    {
-      whitePlayerSidePtr = &playerTree.loc->data;
-    }
+    AVLNode<Player>* whitePlayerNode = playerTree.find(itr->tags()["White"].value());
+    if(whitePlayerNode == nullptr)
+      whitePlayerNode = playerTree.insertAndGet(itr->tags()["White"].value());
+    whitePlayerSidePtr = &whitePlayerNode->data;
 
-    if(!playerTree.search(itr->tags()["Black"].value()))
-    {
-      playerTree.insert(itr->tags()["Black"].value());
-      blackPlayerSidePtr = &playerTree.loc->data;
-    }
-    else
-    {
-      blackPlayerSidePtr = &playerTree.loc->data;
-    }
+    AVLNode<Player>* blackPlayerNode = playerTree.find(itr->tags()["Black"].value());
+    if(blackPlayerNode == nullptr)
+      blackPlayerNode = playerTree.insertAndGet(itr->tags()["Black"].value());
+    blackPlayerSidePtr = &blackPlayerNode->data;
   
     //update hash table pointers
     //update players of event
@@ -1270,11 +1258,13 @@ int runChessableCli(const ChessableConfig &config)
     pgn::Game game = *itr; //parses the current game
     pgn::MoveList moveList = game.moves(); //stores the list of moves in moveList
 
-    ecoTree.search(itr->tags()["ECO"].value());
+    AVLNode<ECO>* ecoNode = ecoTree.find(itr->tags()["ECO"].value());
+    if(ecoNode == nullptr)
+      ecoNode = ecoTree.insertAndGet(itr->tags()["ECO"].value());
     
     pgn = moveList.getPGN(); //get the moves in PGN format
 
-    Game *newGame = new Game(eventPtr, whitePlayerSidePtr, blackPlayerSidePtr, &ecoTree.loc->data, itr->tags()["Result"].value(),  stoi(itr->tags()["WhiteElo"].value()), stoi(itr->tags()["BlackElo"].value()), moveList.size(), pgn); //create a new game object
+    Game *newGame = new Game(eventPtr, whitePlayerSidePtr, blackPlayerSidePtr, &ecoNode->data, itr->tags()["Result"].value(),  stoi(itr->tags()["WhiteElo"].value()), stoi(itr->tags()["BlackElo"].value()), moveList.size(), pgn); //create a new game object
 
     //update player score based on game result
     if(itr->tags()["Result"].value() == "1-0")
@@ -1307,8 +1297,8 @@ int runChessableCli(const ChessableConfig &config)
     playerGames.doubleHashInsert(blackPlayerSidePtr->playerName, newGame);
 
     //inserts new game into the tree
-    gameTree.insert(*newGame);
-    gameTree.loc->data.playedInEvent = eventPtr; //stores pointer to event in the game
+    AVLNode<Game>* gameNode = gameTree.insertAndGet(*newGame);
+    gameNode->data.playedInEvent = eventPtr; //stores pointer to event in the game
   } 
   
   int choice;
@@ -1344,9 +1334,14 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         auto searchp = Player(userInput);
-        playerTree.search(searchp);
-        playerTree.loc->data.getWinrate();
-        cout << endl;
+        AVLNode<Player>* playerNode = playerTree.find(searchp);
+        if(playerNode)
+        {
+          playerNode->data.getWinrate();
+          cout << endl;
+        }
+        else
+          cout << "\e[0;31mThat player does not exist in our database!\x1b[0m" << endl;
       }; break;
       
       // Get Player MatchUps
