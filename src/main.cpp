@@ -1009,27 +1009,25 @@ void getMostPlayedOpening(string userInput, HashTable<Game *> &games)
 }
 
 //stores pointers of all those games whose initial moves match the given pgn
-void copyMatchingMove(string pgn, int totalMoves, bool blackMoved, AVLNode<Game> *gameNode, LinkedList<Game*> &matchingMoveList)
+void copyMatchingMove(const string& pgn, int totalMoves, bool blackMoved, AVLTree<Game>& gameTree, LinkedList<Game*> &matchingMoveList)
 {
-  if(gameNode && gameNode->data.numberOfMoves >= totalMoves ) //check if node is valid and the total moves played in a game were equal or greater
-  {
-    copyMatchingMove(pgn, totalMoves, blackMoved, gameNode->left, matchingMoveList); //explore left subtree
-
+  gameTree.forEachInOrder([&](Game& game) {
+    if(game.numberOfMoves < totalMoves)
+      return;
     //if black side did not move in input pgn, we must strip the black move from the game pgn as well
-    string gamePGN = gameNode->data.getPGN(totalMoves);
+    string gamePGN = game.getPGN(totalMoves);
     gamePGN = gamePGN.substr(0, gamePGN.find_last_of(" "));
 
     if(!blackMoved) //strip black move
       gamePGN = gamePGN.substr(0, gamePGN.find_last_of(" "));
     if(pgn == gamePGN) //if pgn is a match, insert into list
-      matchingMoveList.insert(&gameNode->data);
-    copyMatchingMove(pgn, totalMoves, blackMoved, gameNode->right, matchingMoveList); //explore right sub tree
-  }
+      matchingMoveList.insert(&game);
+  });
 }
 
 //outputs the most played after the inputted set of moves in PGN format
 
-void getMostPlayedMove(string pgn, AVLNode<Game> *gameNode)
+void getMostPlayedMove(string pgn, AVLTree<Game>& gameTree)
 {
   int totalMoves = extractMaximum(pgn);
   LinkedList<Game*> matchingMoveList;
@@ -1071,7 +1069,7 @@ void getMostPlayedMove(string pgn, AVLNode<Game> *gameNode)
   else
     blackMoved = 1;
 
-  copyMatchingMove(pgn, totalMoves, blackMoved, gameNode, matchingMoveList);  //copies all the matching game pointers into the matchingMoveList whose PGN uptil totalMoves is same as the input PGN
+  copyMatchingMove(pgn, totalMoves, blackMoved, gameTree, matchingMoveList);  //copies all the matching game pointers into the matchingMoveList whose PGN uptil totalMoves is same as the input PGN
 
   for( auto itr=matchingMoveList.begin();  itr!=matchingMoveList.end(); itr++) //iterate over the matchingMoveList
   {
@@ -1465,7 +1463,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter PGN:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getMostPlayedMove(userInput, gameTree.rootNode());
+        getMostPlayedMove(userInput, gameTree);
       }; break;
 
       //prints all games of a player played in a certain year

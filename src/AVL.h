@@ -152,6 +152,12 @@ class AVLTree
     }
 
     template <typename Visitor>
+    void forEachInOrder(Visitor&& visitor)
+    {
+      forEachInOrderImpl(root, visitor);
+    }
+
+    template <typename Visitor>
     void forEachInOrder(Visitor&& visitor) const
     {
       forEachInOrderImpl(root, visitor);
@@ -398,6 +404,17 @@ class AVLTree
 	}
 
   private:
+    template <typename Visitor>
+    void forEachInOrderImpl(AVLNode<T>* node, Visitor& visitor)
+    {
+      if(node == nullptr)
+        return;
+
+      forEachInOrderImpl(node->left, visitor);
+      visitor(node->data);
+      forEachInOrderImpl(node->right, visitor);
+    }
+
     template <typename Visitor>
     void forEachInOrderImpl(const AVLNode<T>* node, Visitor& visitor) const
     {
