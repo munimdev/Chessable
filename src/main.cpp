@@ -640,35 +640,24 @@ class Game
 };
 
 //Filter all games whose average rating is greater than entered rating
-void filterGamesByRating(int averageRating, AVLNode<Game> *gameNode)
+void filterGamesByRating(int averageRating, const AVLTree<Game>& gameTree)
 {
-  if (gameNode)
-  {
-    filterGamesByRating (averageRating, gameNode->left);
-    if (averageRating < ((gameNode->data.whiteElo + gameNode->data.blackElo)/2))
-    {
-      cout << gameNode->data << endl;
-    }
-    filterGamesByRating (averageRating, gameNode->right);
-  }
+  gameTree.forEachInOrder([averageRating](const Game& game) {
+    if(averageRating < ((game.whiteElo + game.blackElo) / 2))
+      cout << game << endl;
+  });
 }
 
 //Filter all games whose total moves are less than the entered number of moves
 //takes as input the total moves
-//recursive function where avlnode is passed and all games are traversed and printed only if their total moves have an upper bound of input
-void filterGamesByMoves(int totalMoves, AVLNode<Game> *gameNode)
+void filterGamesByMoves(int totalMoves, const AVLTree<Game>& gameTree)
 {
-  if (gameNode) //base case
-  {
-    filterGamesByMoves(totalMoves, gameNode->left); //explore left subtree
-    if (totalMoves >= gameNode->data.numberOfMoves) //check upper bound
-    {
-      cout << gameNode->data << endl;
-    }
-    filterGamesByMoves(totalMoves, gameNode->right); //explore right subtree
-  }
+  gameTree.forEachInOrder([totalMoves](const Game& game) {
+    if(totalMoves >= game.numberOfMoves)
+      cout << game << endl;
+  });
 }
-
+ 
 //Filter a player's games played in certain year
 //takes as input the player name and the year
 //hash table of player games is passed as a parameter
@@ -1505,7 +1494,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter lower bound for average rating:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        filterGamesByRating(stoi(userInput), gameTree.rootNode());
+        filterGamesByRating(stoi(userInput), gameTree);
       }; break;
 
       case 22:
@@ -1513,7 +1502,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter upper bound for total moves:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        filterGamesByMoves(stoi(userInput), gameTree.rootNode());
+        filterGamesByMoves(stoi(userInput), gameTree);
       }; break;
   }
   } while (choice != -1);
