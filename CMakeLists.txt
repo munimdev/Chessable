@@ -59,6 +59,8 @@ add_executable(
     src/main_entry.cpp
     src/app/config_parser.cpp
     src/cli/menu.cpp
+    src/domain/chess_types.cpp
+    src/query/chess_queries.cpp
 )
 target_link_libraries(chessable_cli PRIVATE pgnlib)
 target_include_directories(chessable_cli PRIVATE src src/pgnlib)
