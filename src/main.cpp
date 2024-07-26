@@ -8,7 +8,7 @@
 #include "domain/chess_database.h"
 #include "ingest/database_loader.h"
 #include "domain/chess_types.h"
-#include "query/chess_queries.h"
+#include "query/query_service.h"
 
 using namespace std;
 
@@ -22,6 +22,7 @@ int runChessableCli(const ChessableConfig &config)
   {
     return 1;
   }
+  QueryService queryService(database);
   
   int choice;
   string opening, userInput;
@@ -37,7 +38,7 @@ int runChessableCli(const ChessableConfig &config)
       case 1:
       {
         cout << "\e[46mEnter an ECO Code:\x1b[0m "; cin >> opening;
-        getOpenings(opening, database.ecoTree);
+        queryService.getOpenings(opening);
       }; break;
 
       // Events Attended by player
@@ -46,7 +47,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter Player Name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        printEventData(userInput, database.playerEvents);
+        queryService.printEventsAttendedByPlayer(userInput);
       }; break;
       
       // win Rate
@@ -55,11 +56,8 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter Player Name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        auto searchp = Player(userInput);
-        AVLNode<Player>* playerNode = database.playerTree.find(searchp);
-        if(playerNode)
+        if(queryService.printPlayerWinRate(userInput))
         {
-          playerNode->data.getWinrate();
           cout << endl;
         }
         else
@@ -72,7 +70,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter Player Name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getPlayerMatchups(userInput, database.playerMatchups);
+        queryService.printPlayerMatchups(userInput);
         cout << endl;
        }; break;
 
@@ -83,7 +81,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getGamesOfEvent(userInput, database.eventGames);
+        queryService.printGamesOfEvent(userInput);
         cout << endl;
       }; break;
 
@@ -94,7 +92,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getTopPlayerOfEvent(userInput, database.eventGames);
+        queryService.printTopPlayerOfEvent(userInput);
         cout << endl;
       }; break;
 
@@ -102,13 +100,13 @@ int runChessableCli(const ChessableConfig &config)
       case 7:
       {
         cout << "\e[0;32mFollowing tournaments are available in our database:\x1b[0m " << endl << endl;
-        printAllEvents(database.eventTree);
+        queryService.printAllEvents();
       }; break;
 
       // Pretty Print Event List
       case 8:
       {
-        database.eventTree.prettyPrint();
+        queryService.prettyPrintEventTree();
       }; break;
 
       // Get Events By year
@@ -117,7 +115,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter year:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        getEventsByYear(database.eventTree, stoi(userInput));
+        queryService.printEventsByYear(stoi(userInput));
       }; break;
 
       // Get Total Games Played At Event
@@ -126,7 +124,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter Event Name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getTotalGamesPlayedAtEvent(userInput, database.eventGames);
+        queryService.printTotalGamesPlayedAtEvent(userInput);
         cout << endl;
       }; break;
 
@@ -137,7 +135,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getEventsOfSameLocation(database.eventTree, userInput);
+        queryService.printEventsOfSameLocation(userInput);
       }; break;
 
       // Players that attened certain event
@@ -147,7 +145,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        printPlayerData(userInput, database.eventPlayers);
+        queryService.printPlayersOfEvent(userInput);
       }; break;
 
       //Displays variations of an opening
@@ -157,7 +155,7 @@ int runChessableCli(const ChessableConfig &config)
         cin.ignore();
         getline(cin, userInput);
         cout << endl;
-        getVariationsOfOpenings(userInput, database.openingsTree);
+        queryService.printOpeningVariations(userInput);
       }; break;
 
       //Gets lifetime score between 2 players
@@ -170,7 +168,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter player 2's name:\x1b[0m ";
         getline(cin, player2);
         cout << endl;
-        getMatchupScore(userInput, player2, database.playerGames);
+        queryService.printMatchupScore(userInput, player2);
       }; break;
   
       //Gets lifetime games between 2 players
@@ -183,7 +181,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter player 2's name:\x1b[0m ";
         getline(cin, player2);
         cout << endl;
-        getMatchupGames(userInput, player2, database.playerGames);
+        queryService.printMatchupGames(userInput, player2);
       }; break;
 
       //Gets lifetime games of a player
@@ -192,7 +190,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter player's name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        printGameData(userInput, database.playerGames);
+        queryService.printGamesOfPlayer(userInput);
       }; break;
 
       //Prints the most played opening by a player
@@ -201,7 +199,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter player's name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getMostPlayedOpening(userInput, database.playerGames);
+        queryService.printMostPlayedOpeningByPlayer(userInput);
       }; break;
     
       //given a chess position, the program outputs the most played move
@@ -210,7 +208,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter PGN:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getMostPlayedMove(userInput, database.gameTree);
+        queryService.printMostPlayedMoveAfterPgn(userInput);
       }; break;
 
       //prints all games of a player played in a certain year
@@ -223,7 +221,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter year:\x1b[0m ";
         cin >> year;
         cout << endl;
-        getPlayerGamesByYear(userInput, year, database.playerGames);
+        queryService.printPlayerGamesByYear(userInput, year);
       }; break;
 
       case 20:
@@ -231,7 +229,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter event name:\x1b[0m ";
         cin.ignore();
         getline(cin, userInput);
-        getMostPlayedOpening(userInput, database.eventGames);
+        queryService.printMostPlayedOpeningByEvent(userInput);
       }; break;
 
       case 21:
@@ -239,7 +237,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter lower bound for average rating:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        filterGamesByRating(stoi(userInput), database.gameTree);
+        queryService.filterGamesByAverageRating(stoi(userInput));
       }; break;
 
       case 22:
@@ -247,7 +245,7 @@ int runChessableCli(const ChessableConfig &config)
         cout << "\e[46mEnter upper bound for total moves:\x1b[0m ";
         cin >> userInput;
         cout << endl;
-        filterGamesByMoves(stoi(userInput), database.gameTree);
+        queryService.filterGamesByMovesUpperBound(stoi(userInput));
       }; break;
   }
   } while (choice != -1);

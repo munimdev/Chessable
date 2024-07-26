@@ -62,6 +62,7 @@ add_executable(
     src/domain/chess_types.cpp
     src/ingest/database_loader.cpp
     src/query/chess_queries.cpp
+    src/query/query_service.cpp
 )
 target_link_libraries(chessable_cli PRIVATE pgnlib)
 target_include_directories(chessable_cli PRIVATE src src/pgnlib)
