@@ -26,6 +26,15 @@ struct ChessDatabase
         return std::max(minimum, (gameCount / divisor) + 1);
     }
 
+    ChessDatabase()
+        : eventPlayers(257),
+          eventGames(257),
+          playerGames(257),
+          playerMatchups(257),
+          playerEvents(257)
+    {
+    }
+
     explicit ChessDatabase(int gameCount)
         : eventPlayers(scaledBuckets(gameCount, 10, 101)),
           eventGames(scaledBuckets(gameCount, 10, 101)),

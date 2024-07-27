@@ -1,6 +1,4 @@
-#include <fstream>
 #include <iostream>
-#include "Parser.h"
 #include "app/cli_runner.h"
 #include "app/run_chessable_cli.h"
 #include "domain/chess_database.h"
@@ -12,10 +10,7 @@ using namespace std;
 
 int runChessableCli(const ChessableConfig &config)
 {
-  std::ifstream pgnfile(config.pgnPath);
-  pgn::GameCollection games;
-  pgnfile >> games;
-  ChessDatabase database(games.size());
+  ChessDatabase database;
   if(!loadChessDatabase(config, database, cout, cerr))
   {
     return 1;
