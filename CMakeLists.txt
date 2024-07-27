@@ -60,6 +60,7 @@ add_executable(
     src/app/cli_runner.cpp
     src/app/config_parser.cpp
     src/app/menu_controller.cpp
+    src/common/pgn_utils.cpp
     src/cli/menu.cpp
     src/domain/chess_types.cpp
     src/ingest/database_loader.cpp

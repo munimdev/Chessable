@@ -18,7 +18,6 @@ void getPlayerGamesByYear(std::string playerName, int year, HashTable<Game*> &pl
 void getTopPlayerOfEvent(std::string eventName, HashTable<Game*> &eventGames);
 void getGamesOfEvent(std::string eventName, HashTable<Game*> &gameTable);
 void getVariationsOfOpenings(const std::string &openingName, const AVLTree<OpeningNode> &openingsTree);
-int extractMaximum(std::string str);
 void getMatchupScore(std::string player1, std::string player2, HashTable<Game*> &playerGames);
 void getMatchupGames(std::string player1, std::string player2, HashTable<Game*> &playerGames);
 void printGameData(std::string player1, HashTable<Game*> &playerGames);

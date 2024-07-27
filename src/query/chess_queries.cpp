@@ -1,7 +1,8 @@
 #include "query/chess_queries.h"
 
-#include <algorithm>
 #include <iostream>
+
+#include "common/pgn_utils.h"
 
 void getOpenings(std::string EcoCode, AVLTree<ECO> &ecoTree)
 {
@@ -179,29 +180,6 @@ void getVariationsOfOpenings(const std::string &openingName, const AVLTree<Openi
     if(opening.openingName.substr(0, opening.openingName.find(":")) == openingName)
       std::cout << opening << std::endl;
   });
-}
-
-int extractMaximum(std::string str)
-{
-  int num = 0;
-  int res = 0;
-  for(int i = 0; i < static_cast<int>(str.length()); i++)
-  {
-    if(str[static_cast<unsigned long>(i)] >= '0' && str[static_cast<unsigned long>(i)] <= '9')
-      num = num * 10 + (str[static_cast<unsigned long>(i)] - '0');
-    else if(str[static_cast<unsigned long>(i)] == '.')
-    {
-      res = std::max(res, num);
-      num = 0;
-    }
-    else
-    {
-      num = 0;
-    }
-    if(i == static_cast<int>(str.length()) - 1)
-      num = 0;
-  }
-  return std::max(res, num);
 }
 
 void getMatchupScore(std::string player1, std::string player2, HashTable<Game*> &playerGames)
