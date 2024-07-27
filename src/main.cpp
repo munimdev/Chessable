@@ -1,9 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include "Parser.h"
-#include "app/menu_controller.h"
+#include "app/cli_runner.h"
 #include "app/run_chessable_cli.h"
-#include "cli/menu.h"
 #include "domain/chess_database.h"
 #include "ingest/database_loader.h"
 #include "domain/chess_types.h"
@@ -22,16 +21,5 @@ int runChessableCli(const ChessableConfig &config)
     return 1;
   }
   QueryService queryService(database);
-  
-  int choice;
-  do {
-    cli::printMainMenu();
-    choice = cli::readMenuChoice();
-    if (!app::processMenuChoice(choice, queryService))
-    {
-      break;
-    }
-  } while (choice != -1);
-
-  return 0;
+  return app::runInteractiveCli(queryService);
 }

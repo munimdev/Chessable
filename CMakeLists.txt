@@ -57,6 +57,7 @@ add_executable(
     chessable_cli
     src/main.cpp
     src/main_entry.cpp
+    src/app/cli_runner.cpp
     src/app/config_parser.cpp
     src/app/menu_controller.cpp
     src/cli/menu.cpp
