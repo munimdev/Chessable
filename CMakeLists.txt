@@ -58,6 +58,7 @@ add_executable(
     src/main.cpp
     src/main_entry.cpp
     src/app/config_parser.cpp
+    src/app/menu_controller.cpp
     src/cli/menu.cpp
     src/domain/chess_types.cpp
     src/ingest/database_loader.cpp
